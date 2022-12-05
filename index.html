@@ -1,0 +1,163 @@
+<html>
+    <head>
+        <style>
+            table {
+                font-family: arial, sans-serif;
+                border-collapse: collapse;
+                width: 100%;
+            }
+            
+            td, th {
+                border: 1px solid #dddddd;
+                text-align: left;
+                padding: 8px;
+            }
+            
+            tr:nth-child(even) {
+                background-color: #dddddd;
+            }
+        </style>
+        <script type='text/javascript'>
+            // initialize the array with all the fields' names (since they are used as ids and we don't want duplicates)
+            fieldNames = []
+            // function to clear the imput fields "type" and "fieldName"
+            function claerInputs(){
+                var typeInput = document.getElementById("type")
+                typeInput.value = ""
+                var labelInput = document.getElementById("fieldName")
+                labelInput.value = ""
+            }
+            // function that will add the field based on out inputs
+            function addField(){
+                var type = document.getElementById("type").value;
+                var container = document.getElementById("container");
+                if(type == "select"){
+                    // if the type is "select" we create a select element
+                    var select = document.createElement('select');
+                    var fieldName = document.getElementById("fieldName").value;
+                    if(fieldNames.includes(fieldName)){
+                        // i check if the name is already present, if it is i send a message and clear the inputs
+                        alert("Element with the same name already in the list")
+                        claerInputs()
+                        return
+                    }
+                    else{
+                        // if the fieldName is a new one i insert it into the array
+                        fieldNames.push(fieldName)
+                    }
+                    var div = document.createElement("div");
+                    // i make the user insert all the option of the select input
+                    var inputdata = prompt("insert the elements you want to add in the select field (split them with ';')")
+                    // then i remove all spaces in exccess
+                    inputdata = inputdata.trim()
+                    // if the last character is a ; i remove it so there is no empty option
+                    if(inputdata[inputdata.length - 1] == ";")  inputdata = inputdata.substring(0, inputdata.lastIndexOf(";"))
+                    inputdata.split(';').forEach(function( item ) {
+                        // i create the options and give them their values
+                        option = document.createElement('option');
+                        option.value = option.textContent = item;
+                        select.appendChild(option);
+                    });
+                    // i create the container for the input, the label and the delete button
+                    div.id = fieldName + "container"
+                    select.name = fieldName;
+                    select.id = fieldName
+                    // i create the label for the imput
+                    var label = document.createElement("label")
+                    label.innerHTML = fieldName + ": ";
+                    label.htmlFor = fieldName;
+                    // i create the button to delete this element and associate it with an appropriate function
+                    var deleteButton = document.createElement("button");
+                    deleteButton.innerHTML = "Delete " + fieldName
+                    deleteButton.onclick = function() { deleteField(fieldName)};
+                    // i append all the elements to their div and the div to the container in the main body 
+                    div.appendChild(label)
+                    div.appendChild(select)
+                    div.appendChild(deleteButton)
+                    container.appendChild(div)
+                    claerInputs()
+                }
+                else{
+                    if(type == "text"){
+                        // i create the input element and get the fieldName value
+                        var input = document.createElement("input");
+                        var fieldName = document.getElementById("fieldName").value;
+                        if(fieldNames.includes(fieldName)){
+                            // i check if the name is already present, if it is i send a message and clear the inputs
+                            alert("Element with the same name already in the list")
+                            claerInputs()
+                            return
+                        }
+                        else{
+                            // if the fieldName is a new one i insert it into the array
+                            fieldNames.push(fieldName)
+                        }
+                        // i create the container for the input, the label and the delete button
+                        var div = document.createElement("div");
+                        div.id = fieldName + "container"
+                        input.name = fieldName;
+                        input.id = fieldName
+                        // i create the label for the imput
+                        var label = document.createElement("label")
+                        label.innerHTML = fieldName + ": ";
+                        label.htmlFor = fieldName;
+                        // i create the button to delete this element and associate it with an appropriate function
+                        var deleteButton = document.createElement("button");
+                        deleteButton.innerHTML = "Delete " + fieldName
+                        deleteButton.onclick = function() { deleteField(fieldName)};
+                        // i append all the elements to their div and the div to the container in the main body 
+                        div.appendChild(label)
+                        div.appendChild(input)
+                        div.appendChild(deleteButton)
+                        container.appendChild(div)
+                        claerInputs()
+                    }
+                    else{
+                        // If the user inserts an invalid field type they get an error
+                        alert("Invalid input type")
+                        claerInputs()
+                    }
+                }
+            }
+            function createTable() {
+                table = document.createElement("table")
+                headRow = document.createElement("thead")
+                table.appendChild(headRow)
+                fieldValues = []
+                for(fieldName of fieldNames){
+                    th = document.createElement("th")
+                    th.innerHTML = fieldName
+                    headRow.appendChild(th)
+                    fieldValue = document.getElementById(fieldName).value
+                    fieldValues.push(fieldValue);
+                }
+                firstRow = document.createElement("tr")
+                table.appendChild(firstRow)
+                for(fieldValue of fieldValues){
+                    td = document.createElement("td")
+                    td.innerHTML = fieldValue
+                    firstRow.appendChild(td)
+                }
+                tableContainer = document.getElementById("tables")
+                tableContainer.appendChild(table)
+
+            }
+            // function that deletes the container of the element
+            function deleteField(fieldName){
+                document.getElementById(fieldName + "container").remove();
+                fieldNames.pop(fieldName)
+            }
+        </script>
+    </head>
+    <body>
+        <input type="text" id="type" name="type" value="">Type of input<br />
+        <input type="text" id="fieldName" name="fieldName" value="">Name of the field<br />
+        <button type="submit" href="#" id="filldetails" onclick="addField()">Add input</button>
+        
+        <form id="container">
+            <input type="button" id = "submit" value="Submit" onclick="createTable()">
+        </form>
+        <div id="tables">
+        </div>
+    </body>
+</html>
